@@ -25,10 +25,13 @@ export default function App() {
     formData.append("file", file);
 
     try {
-      const response = await fetch("http://localhost:3000/upload", {
-        method: "POST",
-        body: formData,
-      });
+      const response = await fetch(
+        "http://mmi22-16.mmi-limoges.fr:3000/upload",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
 
       const data = await response.json();
 
