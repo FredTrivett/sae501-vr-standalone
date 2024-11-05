@@ -25,7 +25,7 @@ export default function App() {
     formData.append("file", file);
 
     try {
-      const response = await fetch("http://localhost:3000/upload", {
+      const response = await fetch("http://mmi22-16.mmi-limoges.fr:3000/upload", {
         method: "POST",
         body: formData,
       });
@@ -139,11 +139,10 @@ export default function App() {
 
             <button
               type="submit"
-              className={`w-full py-2 px-4 font-semibold rounded-lg shadow-md transition-colors ${
-                selectedFile
+              className={`w-full py-2 px-4 font-semibold rounded-lg shadow-md transition-colors ${selectedFile
                   ? "bg-blue-600 hover:bg-blue-700 text-white"
                   : "bg-gray-300 text-gray-500 cursor-not-allowed"
-              }`}
+                }`}
               disabled={!selectedFile}
             >
               Upload File
@@ -152,11 +151,10 @@ export default function App() {
             {uploadStatus && (
               <div className="space-y-2">
                 <div
-                  className={`text-center px-4 py-2 rounded-full text-sm font-medium ${
-                    uploadStatus.success
+                  className={`text-center px-4 py-2 rounded-full text-sm font-medium ${uploadStatus.success
                       ? "bg-green-100 text-green-800"
                       : "bg-red-100 text-red-800"
-                  }`}
+                    }`}
                 >
                   {uploadStatus.message}
                 </div>
