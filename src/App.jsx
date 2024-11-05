@@ -38,6 +38,9 @@ export default function App() {
           message: "Upload successful",
           uploadId: data.uploadId,
         });
+        // Reset file input and selected file after successful upload
+        setSelectedFile(null);
+        fileInput.value = "";
       } else {
         throw new Error(data.error || "Upload failed");
       }
@@ -136,7 +139,11 @@ export default function App() {
 
             <button
               type="submit"
-              className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition-colors"
+              className={`w-full py-2 px-4 font-semibold rounded-lg shadow-md transition-colors ${
+                selectedFile
+                  ? "bg-blue-600 hover:bg-blue-700 text-white"
+                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
+              }`}
               disabled={!selectedFile}
             >
               Upload File
