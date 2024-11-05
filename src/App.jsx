@@ -33,7 +33,11 @@ export default function App() {
       const data = await response.json();
 
       if (response.ok) {
-        setUploadStatus({ success: true, message: "Upload successful" });
+        setUploadStatus({
+          success: true,
+          message: "Upload successful",
+          uploadId: data.uploadId,
+        });
       } else {
         throw new Error(data.error || "Upload failed");
       }
@@ -139,14 +143,22 @@ export default function App() {
             </button>
 
             {uploadStatus && (
-              <div
-                className={`text-center px-4 py-2 rounded-full text-sm font-medium ${
-                  uploadStatus.success
-                    ? "bg-green-100 text-green-800"
-                    : "bg-red-100 text-red-800"
-                }`}
-              >
-                {uploadStatus.message}
+              <div className="space-y-2">
+                <div
+                  className={`text-center px-4 py-2 rounded-full text-sm font-medium ${
+                    uploadStatus.success
+                      ? "bg-green-100 text-green-800"
+                      : "bg-red-100 text-red-800"
+                  }`}
+                >
+                  {uploadStatus.message}
+                </div>
+                {uploadStatus.success && uploadStatus.uploadId && (
+                  <div className="text-center text-sm text-gray-600">
+                    Upload ID:{" "}
+                    <span className="font-mono">{uploadStatus.uploadId}</span>
+                  </div>
+                )}
               </div>
             )}
           </form>
