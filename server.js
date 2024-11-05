@@ -1,21 +1,50 @@
-const express = require('express');
-const cors = require('cors');
+import express from 'express';
+import multer from 'multer';
+import AdmZip from 'adm-zip';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import cors from 'cors';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const app = express();
+app.use(cors());
 
-// Configurer CORS
-app.use(cors({
-    origin: 'http://127.0.0.1:3000', // Remplacez par l'URL de votre client
-    methods: 'GET,POST,PUT,DELETE', // Méthodes autorisées
-    credentials: true // Si nécessaire
-}));
-app.get('/', (req, res) => {
-    res.send('Hello');
-});
-app.get('/test', (req, res) => {
-    res.send('Test');
+// Configure multer for ZIP file uploads
+const upload = multer({
+    storage: multer.memoryStorage(),
+    fileFilter: (req, file, cb) => {
+        if (file.mimetype === 'application/zip') {
+            cb(null, true);
+        } else {
+            cb(new Error('Only ZIP files are allowed'));
+        }
+    },
 });
 
-app.listen(3000, () => {
-    console.log('Server running on port 3000');
+// Handle ZIP upload
+app.post('/upload', upload.single('file'), (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ error: 'No file uploaded' });
+        }
+
+        const zip = new AdmZip(req.file.buffer);
+        const uploadDir = path.join(__dirname, 'uploads');
+
+        // Extract the ZIP contents to the uploads directory
+        zip.extractAllTo(uploadDir, true);
+
+        res.json({ message: 'File uploaded and extracted successfully' });
+    } catch (error) {
+        console.error('Upload error:', error);
+        res.status(500).json({ error: 'Failed to process upload' });
+    }
+});
+
+const PORT = 3000;
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });
 

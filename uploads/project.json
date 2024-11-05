@@ -1,0 +1,87 @@
+{
+    "scenes": [
+        {
+            "id": "scene-1",
+            "name": "GS__3523.JPG",
+            "mediaSrc": "assets/GS__3523.JPG",
+            "isVideo": false,
+            "tags": [
+                {
+                    "id": "tag-1",
+                    "name": "Door 1",
+                    "type": "door",
+                    "content": "scene-2",
+                    "destinationSceneId": "scene-2",
+                    "sceneId": "scene-1",
+                    "contentVisible": true,
+                    "position": [
+                        -8.040698402079574,
+                        -2.7689570389659437,
+                        5.261182958532795
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "scene-2",
+            "name": "GS__3524.JPG",
+            "mediaSrc": "assets/GS__3524.JPG",
+            "isVideo": false,
+            "tags": [
+                {
+                    "id": "tag-2",
+                    "name": "Door 1",
+                    "type": "door",
+                    "content": "scene-1",
+                    "destinationSceneId": "scene-1",
+                    "sceneId": "scene-2",
+                    "contentVisible": true,
+                    "position": [
+                        5.420277158743411,
+                        -2.5259661309581434,
+                        8.014991617441456
+                    ]
+                },
+                {
+                    "id": "tag-3",
+                    "name": "Text 2",
+                    "type": "text",
+                    "content": "LE BUREAU",
+                    "destinationSceneId": null,
+                    "sceneId": "scene-2",
+                    "contentVisible": false,
+                    "position": [
+                        -3.4068836951525054,
+                        -3.780908274288288,
+                        8.608012320456004
+                    ]
+                },
+                {
+                    "id": "tag-4",
+                    "name": "Image 3",
+                    "type": "image",
+                    "content": "assets/GS__3523.JPG",
+                    "destinationSceneId": null,
+                    "sceneId": "scene-2",
+                    "contentVisible": false,
+                    "position": [
+                        -6.405390430564566,
+                        0.5340820658417837,
+                        7.660661184191482
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "scene-3",
+            "name": "GS013520.mp4",
+            "mediaSrc": "assets/GS013520.mp4",
+            "isVideo": true,
+            "tags": []
+        }
+    ],
+    "idCounters": {
+        "scene": 3,
+        "tag": 4
+    }
+}
