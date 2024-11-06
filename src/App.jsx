@@ -56,6 +56,7 @@ export default function App() {
 
   const handleCopyLink = (uploadId) => {
     const url = `http://localhost:3000/view/${uploadId}`;
+    // const url = `https://mmi22-16.mmi-limoges.fr/view/${uploadId}`;
     navigator.clipboard
       .writeText(url)
       .then(() => {

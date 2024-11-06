@@ -17,6 +17,7 @@ export default function SuccessScreen({ uploadId, onReset }) {
 
             <a
               href={`http://localhost:3000/view/${uploadId}`}
+              //   href={`http://mmi22-16.mmi-limoges.fr/view/${uploadId}`}
               className="inline-block w-full py-3 px-6 text-white bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold transition-colors"
             >
               Start Experience

@@ -123,8 +123,8 @@ app.get('/view/:id', (req, res) => {
         });
 
         // Redirect to the view page
-        res.redirect('https://mmi22-16.mmi-limoges.fr/view');
-        // res.redirect('http://localhost:3000/view');
+        // res.redirect('https://mmi22-16.mmi-limoges.fr/view');
+        res.redirect('http://localhost:3000/view');
     } catch (error) {
         console.error('Error copying files:', error);
         res.status(500).json({ error: 'Failed to copy files: ' + error.message });
