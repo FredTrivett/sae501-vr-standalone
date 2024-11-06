@@ -5,7 +5,6 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import cors from 'cors';
 import { v4 as uuidv4 } from 'uuid';
-
 import fs from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -14,9 +13,8 @@ const __dirname = path.dirname(__filename);
 const app = express();
 app.use(cors());
 
-app.use(bodyParser.json({ limit: '50mb' }));
-app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
-
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // Create uploads directory if it doesn't exist
 const uploadsDir = path.join(__dirname, 'uploads');
@@ -63,12 +61,10 @@ const upload = multer({
 
 // Handle ZIP upload
 app.post('/upload', upload.single('file'), (req, res) => {
-    z
     try {
         if (!req.file) {
             return res.status(400).json({ error: 'No file uploaded' });
         }
-        res.send('Fichier reçu avec succès');
 
         const uploadId = req.uploadId;
         const uploadPath = path.join(uploadsDir, uploadId);
@@ -81,6 +77,7 @@ app.post('/upload', upload.single('file'), (req, res) => {
         // Delete the original ZIP file
         fs.unlinkSync(zipPath);
 
+        // Send only one response with JSON
         res.json({
             message: 'File uploaded and extracted successfully',
             uploadId: uploadId
@@ -127,6 +124,7 @@ app.get('/view/:id', (req, res) => {
 
         // Redirect to the view page
         res.redirect('https://mmi22-16.mmi-limoges.fr/view');
+        // res.redirect('http://localhost:3000/view');
     } catch (error) {
         console.error('Error copying files:', error);
         res.status(500).json({ error: 'Failed to copy files: ' + error.message });
