@@ -1,13 +1,12 @@
 import express from 'express';
-import fs from 'fs';
 import multer from 'multer';
 import AdmZip from 'adm-zip';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import cors from 'cors';
 import { v4 as uuidv4 } from 'uuid';
-import bodyParser from 'body-parser';
 
+import fs from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -15,11 +14,9 @@ const __dirname = path.dirname(__filename);
 const app = express();
 app.use(cors());
 
-
-
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
-//app.use('/uploads', express.static(uploadsDir));
+app.use('/uploads', express.static(uploadsDir));
 
 
 
@@ -73,7 +70,7 @@ app.post('/uploads', upload.single('file'), (req, res) => {
         if (!req.file) {
             return res.status(400).json({ error: 'No file uploaded' });
         }
-        // res.send('Fichier reçu avec succès');
+        res.send('Fichier reçu avec succès');
 
         const uploadId = req.uploadId;
         const uploadPath = path.join(uploadsDir, uploadId);
@@ -138,10 +135,8 @@ app.get('/view/:id', (req, res) => {
     }
 });
 
-
-
 const PORT = 3000;
-app.listen(PORT, '0.0.0.0', () => {
+app.listen(PORT, 'localhost', () => {
     console.log(`Server running on port ${PORT}`);
     console.log(`Uploads directory: ${uploadsDir}`);
 });

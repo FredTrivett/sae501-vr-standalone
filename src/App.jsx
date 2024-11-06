@@ -5,7 +5,7 @@ export default function App() {
   const [uploadStatus, setUploadStatus] = useState(null);
 
   const copyToClipboard = (uploadId) => {
-    const url = `https://mmi22-16.mmi-limoges.fr:3000/view/${uploadId}`;
+    const url = `http://mmi22-16.mmi-limoges.fr:3000/view/${uploadId}`;
     navigator.clipboard.writeText(url)
       .then(() => {
         setUploadStatus(prev => ({
@@ -44,7 +44,7 @@ export default function App() {
 
     try {
       const response = await fetch(
-        "https://mmi22-16.mmi-limoges.fr/uploads",
+        "https://mmi22-16.mmi-limoges.fr/add",
         {
           method: "POST",
           body: formData,
@@ -206,7 +206,7 @@ export default function App() {
                       </button>
 
                       <a
-                        href={`https://mmi22-16.mmi-limoges.fr:3000/view/${uploadStatus.uploadId}`}
+                        href={`http://mmi22-16.mmi-limoges.fr:3000/view/${uploadStatus.uploadId}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center px-4 py-2 text-sm font-medium text-green-600 hover:text-green-800"
