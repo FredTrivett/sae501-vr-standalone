@@ -16,6 +16,11 @@ app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
+// Serve static files from the view directory and its subdirectories
+app.use('/view', express.static(path.join(__dirname, 'view')));
+app.use('/assets', express.static(path.join(__dirname, 'view/assets')));
+app.use('/app', express.static(path.join(__dirname, 'view/app')));
+
 // Create uploads directory if it doesn't exist
 const uploadsDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsDir)) {
@@ -77,7 +82,16 @@ app.post('/upload', upload.single('file'), (req, res) => {
         // Delete the original ZIP file
         fs.unlinkSync(zipPath);
 
-        // Send only one response with JSON
+        // Copy files to view/assets for immediate access
+        fs.readdirSync(uploadPath).forEach(file => {
+            const sourcePath = path.join(uploadPath, file);
+            const destPath = path.join(viewAssetsDir, file);
+            if (fs.existsSync(destPath)) {
+                fs.rmSync(destPath, { recursive: true, force: true });
+            }
+            fs.cpSync(sourcePath, destPath, { recursive: true });
+        });
+
         res.json({
             message: 'File uploaded and extracted successfully',
             uploadId: uploadId
@@ -99,7 +113,11 @@ app.get('/uploads', (req, res) => {
     }
 });
 
-// Add a route to view uploaded files
+// Update the view route to handle both the root /view and /view/:id
+app.get('/view', (req, res) => {
+    res.sendFile(path.join(__dirname, 'view', 'index.html'));
+});
+
 app.get('/view/:id', (req, res) => {
     try {
         const uploadId = req.params.id;
@@ -122,9 +140,8 @@ app.get('/view/:id', (req, res) => {
             fs.cpSync(sourcePath, destPath, { recursive: true });
         });
 
-        // Redirect to the view page
-        // res.redirect('https://mmi22-16.mmi-limoges.fr/view');
-        res.redirect('http://localhost:3000/view');
+        // Send the index.html file
+        res.sendFile(path.join(__dirname, 'view', 'index.html'));
     } catch (error) {
         console.error('Error copying files:', error);
         res.status(500).json({ error: 'Failed to copy files: ' + error.message });
