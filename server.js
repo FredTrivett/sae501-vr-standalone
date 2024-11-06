@@ -5,6 +5,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import cors from 'cors';
 import { v4 as uuidv4 } from 'uuid';
+
 import fs from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -13,10 +14,21 @@ const __dirname = path.dirname(__filename);
 const app = express();
 app.use(cors());
 
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+
+
 // Create uploads directory if it doesn't exist
 const uploadsDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir);
+}
+
+// Create view/assets directory if it doesn't exist
+const viewAssetsDir = path.join(__dirname, 'view', 'assets');
+if (!fs.existsSync(viewAssetsDir)) {
+    fs.mkdirSync(path.join(__dirname, 'view'), { recursive: true });
+    fs.mkdirSync(viewAssetsDir);
 }
 
 // Configure multer for ZIP file uploads
@@ -51,10 +63,12 @@ const upload = multer({
 
 // Handle ZIP upload
 app.post('/upload', upload.single('file'), (req, res) => {
+    z
     try {
         if (!req.file) {
             return res.status(400).json({ error: 'No file uploaded' });
         }
+        res.send('Fichier reçu avec succès');
 
         const uploadId = req.uploadId;
         const uploadPath = path.join(uploadsDir, uploadId);
@@ -88,9 +102,39 @@ app.get('/uploads', (req, res) => {
     }
 });
 
+// Add a route to view uploaded files
+app.get('/view/:id', (req, res) => {
+    try {
+        const uploadId = req.params.id;
+        const uploadPath = path.join(uploadsDir, uploadId);
+
+        // Check if the upload directory exists
+        if (!fs.existsSync(uploadPath)) {
+            return res.status(404).json({ error: 'Upload not found' });
+        }
+
+        // Clean up the assets directory
+        fs.readdirSync(viewAssetsDir).forEach(file => {
+            fs.rmSync(path.join(viewAssetsDir, file), { recursive: true, force: true });
+        });
+
+        // Copy files from the upload directory to view/assets
+        fs.readdirSync(uploadPath).forEach(file => {
+            const sourcePath = path.join(uploadPath, file);
+            const destPath = path.join(viewAssetsDir, file);
+            fs.cpSync(sourcePath, destPath, { recursive: true });
+        });
+
+        // Redirect to the view page
+        res.redirect('https://mmi22-16.mmi-limoges.fr/view');
+    } catch (error) {
+        console.error('Error copying files:', error);
+        res.status(500).json({ error: 'Failed to copy files: ' + error.message });
+    }
+});
+
 const PORT = 3000;
-app.listen(PORT, () => {
+app.listen(PORT, 'localhost', () => {
     console.log(`Server running on port ${PORT}`);
     console.log(`Uploads directory: ${uploadsDir}`);
 });
-

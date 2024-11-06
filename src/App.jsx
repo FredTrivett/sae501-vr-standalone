@@ -4,6 +4,24 @@ export default function App() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploadStatus, setUploadStatus] = useState(null);
 
+  const copyToClipboard = (uploadId) => {
+    const url = `https://mmi22-16.mmi-limoges.fr:3000/view/${uploadId}`;
+    navigator.clipboard.writeText(url)
+      .then(() => {
+        setUploadStatus(prev => ({
+          ...prev,
+          copyMessage: "Lien copié !"
+        }));
+        setTimeout(() => {
+          setUploadStatus(prev => ({
+            ...prev,
+            copyMessage: null
+          }));
+        }, 2000);
+      })
+      .catch(err => console.error('Erreur lors de la copie:', err));
+  };
+
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     setSelectedFile(file);
@@ -26,7 +44,7 @@ export default function App() {
 
     try {
       const response = await fetch(
-        "http://mmi22-16.mmi-limoges.fr:3000/upload",
+        "https://mmi22-16.mmi-limoges.fr/uploads",
         {
           method: "POST",
           body: formData,
@@ -142,11 +160,10 @@ export default function App() {
 
             <button
               type="submit"
-              className={`w-full py-2 px-4 font-semibold rounded-lg shadow-md transition-colors ${
-                selectedFile
-                  ? "bg-blue-600 hover:bg-blue-700 text-white"
-                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
-              }`}
+              className={`w-full py-2 px-4 font-semibold rounded-lg shadow-md transition-colors ${selectedFile
+                ? "bg-blue-600 hover:bg-blue-700 text-white"
+                : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                }`}
               disabled={!selectedFile}
             >
               Upload File
@@ -155,18 +172,72 @@ export default function App() {
             {uploadStatus && (
               <div className="space-y-2">
                 <div
-                  className={`text-center px-4 py-2 rounded-full text-sm font-medium ${
-                    uploadStatus.success
-                      ? "bg-green-100 text-green-800"
-                      : "bg-red-100 text-red-800"
-                  }`}
+                  className={`text-center px-4 py-2 rounded-full text-sm font-medium ${uploadStatus.success
+                    ? "bg-green-100 text-green-800"
+                    : "bg-red-100 text-red-800"
+                    }`}
                 >
                   {uploadStatus.message}
                 </div>
                 {uploadStatus.success && uploadStatus.uploadId && (
-                  <div className="text-center text-sm text-gray-600">
-                    Upload ID:{" "}
-                    <span className="font-mono">{uploadStatus.uploadId}</span>
+                  <div className="text-center space-y-2">
+                    <div className="text-sm text-gray-600">
+                      Upload ID: <span className="font-mono">{uploadStatus.uploadId}</span>
+                    </div>
+                    <div className="flex justify-center space-x-4">
+                      <button
+                        onClick={() => copyToClipboard(uploadStatus.uploadId)}
+                        className="inline-flex items-center px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-800"
+                      >
+                        <svg
+                          className="w-4 h-4 mr-2"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"
+                          />
+                        </svg>
+                        Copier le lien
+                      </button>
+
+                      <a
+                        href={`https://mmi22-16.mmi-limoges.fr:3000/view/${uploadStatus.uploadId}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center px-4 py-2 text-sm font-medium text-green-600 hover:text-green-800"
+                      >
+                        <svg
+                          className="w-4 h-4 mr-2"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                          />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                          />
+                        </svg>
+                        Voir le projet
+                      </a>
+                    </div>
+                    {uploadStatus.copyMessage && (
+                      <div className="text-sm text-green-600">
+                        {uploadStatus.copyMessage}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
