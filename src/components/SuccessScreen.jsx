@@ -5,7 +5,9 @@ export default function SuccessScreen({ uploadId, onReset }) {
   const [toastMessage, setToastMessage] = useState("");
 
   const handleCopyLink = async () => {
-    const url = `http://localhost:3000/view/${uploadId}`;
+    // const url = `http://localhost:3000/view/${uploadId}`;
+    const url = `https://f-trivett.mmi-limoges.fr/view/${uploadId}`;
+
     try {
       await navigator.clipboard.writeText(url);
       setToastMessage("Link copied to clipboard!");
@@ -76,7 +78,8 @@ export default function SuccessScreen({ uploadId, onReset }) {
 
             <div className="flex flex-col space-y-3">
               <a
-                href={`http://localhost:3000/view/${uploadId}`}
+                // href={`http://localhost:3000/view/${uploadId}`}
+                href={`https://f-trivett.mmi-limoges.fr/view/${uploadId}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-block w-full py-3 px-6 text-white bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold transition-colors"
