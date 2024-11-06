@@ -4,7 +4,7 @@ export default function Toast({
   message,
   type = "success",
   onClose,
-  duration = 2000,
+  duration = 3000,
 }) {
   useEffect(() => {
     if (duration && onClose) {
