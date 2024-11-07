@@ -115,6 +115,7 @@ app.get('/uploads', (req, res) => {
 
 // Update the view route to handle both the root /view and /view/:id
 app.get('/view', (req, res) => {
+    console.log('Accessing main view route');
     res.sendFile(path.join(__dirname, 'view', 'index.html'));
 });
 
@@ -123,33 +124,42 @@ app.get('/view/:id', (req, res) => {
         const uploadId = req.params.id;
         const uploadPath = path.join(uploadsDir, uploadId);
 
+        console.log('Accessing view with ID:', uploadId);
+        console.log('Upload path:', uploadPath);
+
         // Check if the upload directory exists
         if (!fs.existsSync(uploadPath)) {
+            console.log('Upload directory not found');
             return res.status(404).json({ error: 'Upload not found' });
         }
 
+        console.log('Upload directory exists, cleaning assets...');
         // Clean up the assets directory
         fs.readdirSync(viewAssetsDir).forEach(file => {
+            console.log('Removing file from assets:', file);
             fs.rmSync(path.join(viewAssetsDir, file), { recursive: true, force: true });
         });
 
+        console.log('Copying files to assets directory...');
         // Copy files from the upload directory to view/assets
         fs.readdirSync(uploadPath).forEach(file => {
+            console.log('Copying file:', file);
             const sourcePath = path.join(uploadPath, file);
             const destPath = path.join(viewAssetsDir, file);
             fs.cpSync(sourcePath, destPath, { recursive: true });
         });
 
+        console.log('Sending index.html...');
         // Send the index.html file
         res.sendFile(path.join(__dirname, 'view', 'index.html'));
     } catch (error) {
-        console.error('Error copying files:', error);
+        console.error('Error in /view/:id route:', error);
         res.status(500).json({ error: 'Failed to copy files: ' + error.message });
     }
 });
 
 const PORT = 3000;
-app.listen(PORT, 'localhost', () => {
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running on port ${PORT}`);
     console.log(`Uploads directory: ${uploadsDir}`);
 });

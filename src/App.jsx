@@ -26,8 +26,7 @@ export default function App() {
     formData.append("file", selectedFile);
 
     try {
-      // const response = await fetch("http://localhost:3000/upload", {
-      const response = await fetch("https://f-trivett.mmi-limoges.fr/upload", {
+      const response = await fetch("https://mmi22-48.mmi-limoges.fr/upload", {
         method: "POST",
         body: formData,
       });
@@ -56,8 +55,7 @@ export default function App() {
   };
 
   const handleCopyLink = (uploadId) => {
-    // const url = `http://localhost:3000/view/${uploadId}`;
-    const url = `https://f-trivett.mmi-limoges.fr/view/${uploadId}`;
+    const url = `https://mmi22-48.mmi-limoges.fr/view/${uploadId}`;
     navigator.clipboard
       .writeText(url)
       .then(() => {
