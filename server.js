@@ -23,18 +23,18 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 
 
-// Create uploads directory if it doesn't exist
-const uploadsDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadsDir)) {
-    fs.mkdirSync(uploadsDir);
-}
+// // Create uploads directory if it doesn't exist
+const uploadsDir = path.join(__dirname, 'view');
+// if (!fs.existsSync(uploadsDir)) {
+//     fs.mkdirSync(uploadsDir);
+// }
 
-// Create view/assets directory if it doesn't exist
-const viewAssetsDir = path.join(__dirname, 'view', 'assets');
-if (!fs.existsSync(viewAssetsDir)) {
-    fs.mkdirSync(path.join(__dirname, 'view'), { recursive: true });
-    fs.mkdirSync(viewAssetsDir);
-}
+// // Create view/assets directory if it doesn't exist
+//const viewAssetsDir = path.join(__dirname, 'view', 'assets');
+// if (!fs.existsSync(viewAssetsDir)) {
+//     fs.mkdirSync(path.join(__dirname, 'view'), { recursive: true });
+//     fs.mkdirSync(viewAssetsDir);
+// }
 
 // Configure multer for ZIP file uploads
 const storage = multer.diskStorage({
