@@ -23,23 +23,25 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 
 
-// // Create uploads directory if it doesn't exist
+// Create uploads directory if it doesn't exist
 const uploadsDir = path.join(__dirname, 'view');
 // if (!fs.existsSync(uploadsDir)) {
 //     fs.mkdirSync(uploadsDir);
 // }
 
-// // Create view/assets directory if it doesn't exist
-//const viewAssetsDir = path.join(__dirname, 'view', 'assets');
-// if (!fs.existsSync(viewAssetsDir)) {
-//     fs.mkdirSync(path.join(__dirname, 'view'), { recursive: true });
-//     fs.mkdirSync(viewAssetsDir);
-// }
+// Create view/assets directory if it doesn't exist
+const viewAssetsDir = path.join(__dirname, 'view', 'assets');
+if (!fs.existsSync(viewAssetsDir)) {
+    fs.mkdirSync(path.join(__dirname, 'view'), { recursive: true });
+    fs.mkdirSync(viewAssetsDir);
+}
 
 // Configure multer for ZIP file uploads
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         // Generate unique ID for this upload
+        const projectName = req.body.projectName;
+        console.log(projectName);
         const uploadId = uuidv4();
         const uploadPath = path.join(uploadsDir, uploadId);
 
@@ -68,27 +70,44 @@ const upload = multer({
 
 // Handle ZIP upload
 app.post('/uploads', upload.single('file'), (req, res) => {
-
     try {
         if (!req.file) {
             return res.status(400).json({ error: 'No file uploaded' });
         }
-        // res.send('Fichier reçu avec succès');
 
-        const uploadId = req.uploadId;
-        const uploadPath = path.join(uploadsDir, uploadId);
+        const projectName = req.body.projectName; // Récupérer le nom du projet
+        const uploadPath = path.join(uploadsDir, projectName); // Utiliser le nom du projet pour le chemin
+
+        // Créer le dossier pour le projet
+        fs.mkdirSync(uploadPath, { recursive: true });
+
+        // Créer le dossier assets à l'intérieur du projet
+        const assetsDir = path.join(uploadPath, 'assets');
+        fs.mkdirSync(assetsDir, { recursive: true });
+
         const zipPath = path.join(uploadPath, 'upload.zip');
 
-        // Extract the ZIP file
-        const zip = new AdmZip(zipPath);
-        zip.extractAllTo(uploadPath, true);
+        // Déplacer le fichier ZIP dans le dossier du projet
+        fs.renameSync(req.file.path, zipPath);
 
-        // Delete the original ZIP file
+        // Extraire le fichier ZIP dans le dossier assets
+        const zip = new AdmZip(zipPath);
+        zip.extractAllTo(assetsDir, true); // Extraire dans le dossier assets
+
+        // Supprimer le fichier ZIP original
         fs.unlinkSync(zipPath);
 
+        // Copier tous les fichiers de /standalone vers /view/nomDuProjet/
+        const standaloneDir = path.join(__dirname, 'standalone');
+        fs.readdirSync(standaloneDir).forEach(file => {
+            const sourcePath = path.join(standaloneDir, file);
+            const destPath = path.join(uploadPath, file);
+            fs.cpSync(sourcePath, destPath, { recursive: true }); // Copier les fichiers et dossiers
+        });
+
         res.json({
-            message: 'File uploaded and extracted successfully',
-            uploadId: uploadId
+            message: 'File uploaded, extracted, and files copied successfully',
+            uploadId: projectName,
         });
     } catch (error) {
         console.error('Upload error:', error);
@@ -131,7 +150,7 @@ app.get('/view/:id', (req, res) => {
         });
 
         // Redirect to the view page
-        res.redirect('https://mmi22-16.mmi-limoges.fr/view');
+        res.redirect(`https://mmi22-16.mmi-limoges.fr/view/${uploadId}`);
     } catch (error) {
         console.error('Error copying files:', error);
         res.status(500).json({ error: 'Failed to copy files: ' + error.message });

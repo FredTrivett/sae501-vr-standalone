@@ -4,11 +4,10 @@ export default function UploadStatus({ status, onCopyToClipboard }) {
   return (
     <div className="space-y-2">
       <div
-        className={`text-center px-4 py-2 rounded-full text-sm font-medium ${
-          status.success
+        className={`text-center px-4 py-2 rounded-full text-sm font-medium ${status.success
             ? "bg-green-100 text-green-800"
             : "bg-red-100 text-red-800"
-        }`}
+          }`}
       >
         {status.message}
       </div>
@@ -38,7 +37,7 @@ export default function UploadStatus({ status, onCopyToClipboard }) {
               Copier le lien
             </button>
             <a
-              href={`http://mmi22-16.mmi-limoges.fr:3000/view/${status.uploadId}`}
+              href={`https://mmi22-16.mmi-limoges.fr/view/${status.uploadId}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center px-4 py-2 text-sm font-medium text-green-600 hover:text-green-800"

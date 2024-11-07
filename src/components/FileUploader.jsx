@@ -7,6 +7,7 @@ export default function FileUploader() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploadStatus, setUploadStatus] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [projectName, setProjectName] = useState("");
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -25,9 +26,15 @@ export default function FileUploader() {
       return;
     }
 
+    if (!projectName || /\s/.test(projectName)) {
+      setUploadStatus({ success: false, message: "Please enter a valid project name (no spaces)" });
+      return;
+    }
+
     setIsUploading(true);
     const formData = new FormData();
     formData.append("file", file);
+    formData.append("projectName", projectName);
 
     try {
       const response = await fetch("https://mmi22-16.mmi-limoges.fr/add", {
@@ -44,6 +51,7 @@ export default function FileUploader() {
           uploadId: data.uploadId,
         });
         setSelectedFile(null);
+        setProjectName("");
         fileInput.value = "";
       } else {
         throw new Error(data.error || "Upload failed");
@@ -60,7 +68,7 @@ export default function FileUploader() {
   };
 
   const copyToClipboard = (uploadId) => {
-    const url = `http://mmi22-16.mmi-limoges.fr:3000/view/${uploadId}`;
+    const url = `https://mmi22-16.mmi-limoges.fr/view/${uploadId}`;
     navigator.clipboard
       .writeText(url)
       .then(() => {
@@ -96,16 +104,24 @@ export default function FileUploader() {
         </label>
       </div>
 
+      <input
+        type="text"
+        value={projectName}
+        onChange={(e) => setProjectName(e.target.value)}
+        placeholder="Nom du projet (sans espaces)"
+        className="w-full p-2 border border-gray-300 rounded"
+        required
+      />
+
       <button
         type="submit"
-        className={`w-full py-2 px-4 font-semibold rounded-lg shadow-md transition-colors relative ${
-          selectedFile
-            ? "bg-blue-600 hover:bg-blue-700 text-white"
-            : "bg-gray-300 text-gray-500 cursor-not-allowed"
-        }`}
-        disabled={!selectedFile || isUploading}
+        className={`w-full py-2 px-4 font-semibold rounded-lg shadow-md transition-colors relative ${selectedFile && projectName
+          ? "bg-blue-600 hover:bg-blue-700 text-white"
+          : "bg-gray-300 text-gray-500 cursor-not-allowed"
+          }`}
+        disabled={!selectedFile || isUploading || !projectName}
       >
-        <UploadButton isUploading={isUploading} selectedFile={selectedFile} />
+        <UploadButton isUploading={isUploading} />
       </button>
 
       <UploadStatus status={uploadStatus} onCopyToClipboard={copyToClipboard} />

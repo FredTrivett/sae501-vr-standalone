@@ -7,7 +7,7 @@ export default function ProjectList({ projects }) {
           <li key={project} className="flex justify-between items-center">
             <span>{project}</span>
             <a
-              href={`http://mmi22-16.mmi-limoges.fr:3000/view/${project}`}
+              href={`https://mmi22-16.mmi-limoges.fr/view/${project}`}
               className="text-blue-600 hover:underline"
             >
               Accéder
