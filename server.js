@@ -97,15 +97,15 @@ app.post('/uploads', upload.single('file'), (req, res) => {
 });
 
 // // Add an endpoint to list all uploads
-// app.get('/uploads', (req, res) => {
-//     try {
-//         const uploads = fs.readdirSync(uploadsDir);
-//         res.json({ uploads });
-//     } catch (error) {
-//         console.error('Error listing uploads:', error);
-//         res.status(500).json({ error: 'Failed to list uploads' });
-//     }
-// });
+app.get('/projects', (req, res) => {
+    try {
+        const uploads = fs.readdirSync(uploadsDir);
+        res.json({ uploads });
+    } catch (error) {
+        console.error('Error listing uploads:', error);
+        res.status(500).json({ error: 'Failed to list uploads' });
+    }
+});
 
 // Add a route to view uploaded files
 app.get('/view/:id', (req, res) => {

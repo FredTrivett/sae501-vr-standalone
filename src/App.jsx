@@ -1,8 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export default function App() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploadStatus, setUploadStatus] = useState(null);
+  const [projects, setProjects] = useState([]);
+
+  const fetchProjects = async () => {
+    try {
+      const response = await fetch("http://mmi22-16.mmi-limoges.fr:3000/projects");
+      const data = await response.json();
+      setProjects(data.uploads);
+    } catch (error) {
+      console.error("Erreur lors de la récupération des projets:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchProjects();
+  }, []);
 
   const copyToClipboard = (uploadId) => {
     const url = `http://mmi22-16.mmi-limoges.fr:3000/view/${uploadId}`;
@@ -77,6 +92,23 @@ export default function App() {
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
       <div className="max-w-xl w-full">
+        <div className="bg-white rounded-lg shadow-lg p-6 space-y-6">
+          <h2 className="text-xl font-bold text-gray-900">Projets</h2>
+          <ul>
+            {projects.map((project) => (
+              <li key={project} className="flex justify-between items-center">
+                <span>{project}</span>
+                <a
+                  href={`http://mmi22-16.mmi-limoges.fr:3000/view/${project}`}
+                  className="text-blue-600 hover:underline"
+                >
+                  Accéder
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+
         <div className="bg-white rounded-lg shadow-lg p-6 space-y-6">
           <div className="flex justify-center mb-2">
             <img src="/DOWNTALE.svg" alt="DOWNTALE Logo" className="w-32" />
