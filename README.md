@@ -1,8 +1,18 @@
-# React + Vite
+# Structure des fichiers
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+    /html
+        /index.html
+        /view
+            /project 1
+            /project 2
+            /project 3
+                /project.json
+                /image1.png
+                /image2.png
+        /standalone
+            /app
+            /index.html
+        /uploads
 
-Currently, two official plugins are available:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+
