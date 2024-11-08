@@ -7,7 +7,8 @@ const truncateName = (name, maxLength = 20) => {
   return `${name.slice(0, maxLength)}...`;
 };
 
-export default function ProjectList({ projects }) {
+
+export default function ProjectList({ projects, refreshProjects }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -30,9 +31,16 @@ export default function ProjectList({ projects }) {
       <div className="flex flex-col space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-medium text-white/90">Your Projects</h2>
-          <span className="px-3 py-1 rounded-full bg-white/10 text-xs font-medium text-white/70">
-            {filteredProjects.length} total
-          </span>
+          <div className="flex items-center justify-end gap-2">
+            <span className="px-3 py-1 rounded-full bg-white/10 text-xs font-medium text-white/70">
+              {filteredProjects.length} total
+            </span>
+            <button
+              className="px-3 py-1 rounded-full bg-white/10 text-xs font-medium text-white hover:bg-white/20 transition duration-300"
+            >
+              Refresh
+            </button>
+          </div>
         </div>
         <div className="relative">
           <input
@@ -125,11 +133,10 @@ export default function ProjectList({ projects }) {
             <button
               key={i + 1}
               onClick={() => setCurrentPage(i + 1)}
-              className={`w-8 h-8 rounded-lg text-sm font-medium transition-all duration-300 ${
-                currentPage === i + 1
-                  ? "bg-white/20 text-white"
-                  : "text-white/70 hover:bg-white/10"
-              }`}
+              className={`w-8 h-8 rounded-lg text-sm font-medium transition-all duration-300 ${currentPage === i + 1
+                ? "bg-white/20 text-white"
+                : "text-white/70 hover:bg-white/10"
+                }`}
             >
               {i + 1}
             </button>

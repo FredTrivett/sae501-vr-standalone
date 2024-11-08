@@ -36,7 +36,7 @@ export default function App() {
     <div className="min-h-screen relative overflow-hidden flex">
       {/* Background Image */}
       <motion.img
-        src="/background.jpg"
+        src="./assets/background.jpg"
         alt="background"
         className="fixed inset-0 w-full h-full object-cover brightness-[0.7]"
         initial={{ opacity: 0 }}
@@ -69,11 +69,10 @@ export default function App() {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`relative px-6 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${
-                      activeTab === tab.id
+                    className={`relative px-6 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${activeTab === tab.id
                         ? "text-white bg-white/10"
                         : "text-white/60 hover:text-white/80"
-                    }`}
+                      }`}
                   >
                     {tab.label}
                   </button>

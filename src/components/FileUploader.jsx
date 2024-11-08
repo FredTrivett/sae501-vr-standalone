@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import UploadIcon from "./UploadIcon";
 import UploadButton from "./UploadButton";
 
@@ -7,6 +7,21 @@ export default function FileUploader() {
   const [isUploading, setIsUploading] = useState(false);
   const [projectName, setProjectName] = useState("");
   const [uploadSuccess, setUploadSuccess] = useState(null);
+  const [existingProjects, setExistingProjects] = useState([]);
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const response = await fetch("https://mmi22-16.mmi-limoges.fr/list");
+        const data = await response.json();
+        setExistingProjects(data.projects || []);
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+      }
+    };
+
+    fetchProjects();
+  }, []);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -23,10 +38,20 @@ export default function FileUploader() {
       return;
     }
 
+    const formattedProjectName = projectName
+      .replace(/[^a-zA-Z0-9 ]/g, '')
+      .replace(/\s+/g, '_')
+      .toLowerCase();
+
+    if (existingProjects.some(project => project.name.toLowerCase() === formattedProjectName)) {
+      alert("Ce nom de projet existe déjà. Veuillez en choisir un autre.");
+      return;
+    }
+
     setIsUploading(true);
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("projectName", projectName);
+    formData.append("projectName", formattedProjectName);
 
     try {
       const response = await fetch("https://mmi22-16.mmi-limoges.fr/add", {
@@ -58,7 +83,6 @@ export default function FileUploader() {
     navigator.clipboard
       .writeText(url)
       .then(() => {
-        // Show brief success message
         setUploadSuccess((prev) => ({
           ...prev,
           copyMessage: "Link copied!",
@@ -103,11 +127,10 @@ export default function FileUploader() {
 
         <button
           type="submit"
-          className={`w-full py-3 px-4 font-medium rounded-lg transition-all duration-300 text-sm ${
-            selectedFile && projectName
-              ? "bg-white/20 hover:bg-white/30 text-white/90"
-              : "bg-white/10 text-white/30 cursor-not-allowed"
-          }`}
+          className={`w-full py-3 px-4 font-medium rounded-lg transition-all duration-300 text-sm ${selectedFile && projectName
+            ? "bg-white/20 hover:bg-white/30 text-white/90"
+            : "bg-white/10 text-white/30 cursor-not-allowed"
+            }`}
           disabled={!selectedFile || isUploading || !projectName}
         >
           <UploadButton isUploading={isUploading} />

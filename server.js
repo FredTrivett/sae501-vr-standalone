@@ -81,11 +81,10 @@ app.post('/uploads', upload.single('file'), (req, res) => {
             return res.status(400).json({ error: 'No file uploaded' });
         }
 
-
         const projectName = req.body.projectName; // Récupérer le nom du projet
         const uploadPath = path.join(viewDir, projectName); // Utiliser le nom du projet pour le chemin
 
-        // // Créer le dossier pour le projet
+        // Créer le dossier pour le projet
         fs.mkdirSync(uploadPath, { recursive: true });
 
         // Créer le dossier assets à l'intérieur du projet
@@ -100,6 +99,12 @@ app.post('/uploads', upload.single('file'), (req, res) => {
         // Extraire le fichier ZIP dans le dossier assets
         const zip = new AdmZip(zipPath);
         zip.extractAllTo(uploadPath, true); // Extraire dans le dossier assets
+
+        // Vérification de l'existence du dossier assets et du fichier project.json
+        const projectJsonPath = path.join(assetsDir, 'project.json');
+        if (!fs.existsSync(assetsDir) || !fs.existsSync(projectJsonPath)) {
+            return res.status(400).json({ error: 'Le dossier assets doit contenir un fichier project.json' });
+        }
 
         // Supprimer le fichier ZIP original
         fs.unlinkSync(zipPath);
@@ -125,7 +130,7 @@ app.post('/uploads', upload.single('file'), (req, res) => {
 // // Add an endpoint to list all uploads
 app.get('/list', (req, res) => {
     try {
-        const uploads = fs.readdirSync(uploadsDir);
+        const uploads = fs.readdirSync(viewDir);
         res.json({ uploads });
     } catch (error) {
         console.error('Error listing uploads:', error);
