@@ -24,29 +24,35 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 
 // Create uploads directory if it doesn't exist
-const uploadsDir = path.join(__dirname, 'view');
+const uploadsDir = path.join(__dirname, 'uploads');
+const viewDir = path.join(__dirname, 'view');
+
 // if (!fs.existsSync(uploadsDir)) {
 //     fs.mkdirSync(uploadsDir);
 // }
 
 // Create view/assets directory if it doesn't exist
-const viewAssetsDir = path.join(__dirname, 'view', 'assets');
-if (!fs.existsSync(viewAssetsDir)) {
-    fs.mkdirSync(path.join(__dirname, 'view'), { recursive: true });
-    fs.mkdirSync(viewAssetsDir);
-}
+// const viewAssetsDir = path.join(__dirname, 'view', 'assets');
+// if (!fs.existsSync(viewAssetsDir)) {
+//     fs.mkdirSync(path.join(__dirname, 'view'), { recursive: true });
+//     fs.mkdirSync(viewAssetsDir);
+// }
 
 // Configure multer for ZIP file uploads
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         // Generate unique ID for this upload
-        const projectName = req.body.projectName;
-        console.log(projectName);
+
+        fs.readdirSync(uploadsDir).forEach(file => {
+            fs.rmSync(path.join(uploadsDir, file), { recursive: true, force: true });
+        });
+
+        const projectName = req.body.projectName; // Récupérer le nom du projet
         const uploadId = uuidv4();
         const uploadPath = path.join(uploadsDir, uploadId);
 
         // Create directory for this upload
-        fs.mkdirSync(uploadPath);
+        fs.mkdirSync(uploadPath, { recursive: true });
 
         // Store uploadId for later use
         req.uploadId = uploadId;
@@ -75,17 +81,18 @@ app.post('/uploads', upload.single('file'), (req, res) => {
             return res.status(400).json({ error: 'No file uploaded' });
         }
 
-        const projectName = req.body.projectName; // Récupérer le nom du projet
-        const uploadPath = path.join(uploadsDir, projectName); // Utiliser le nom du projet pour le chemin
 
-        // Créer le dossier pour le projet
+        const projectName = req.body.projectName; // Récupérer le nom du projet
+        const uploadPath = path.join(viewDir, projectName); // Utiliser le nom du projet pour le chemin
+
+        // // Créer le dossier pour le projet
         fs.mkdirSync(uploadPath, { recursive: true });
 
         // Créer le dossier assets à l'intérieur du projet
-        // const assetsDir = path.join(uploadPath, 'assets');
-        // fs.mkdirSync(assetsDir, { recursive: true });
+        const assetsDir = path.join(uploadPath, 'assets');
+        fs.mkdirSync(assetsDir, { recursive: true });
 
-        const zipPath = path.join(uploadPath, 'upload.zip');
+        const zipPath = path.join(uploadsDir, 'upload.zip');
 
         // Déplacer le fichier ZIP dans le dossier du projet
         fs.renameSync(req.file.path, zipPath);
@@ -126,36 +133,36 @@ app.get('/list', (req, res) => {
     }
 });
 
-// Add a route to view uploaded files
-app.get('/view/:id', (req, res) => {
-    try {
-        const uploadId = req.params.id;
-        const uploadPath = path.join(uploadsDir, uploadId);
+// // Add a route to view uploaded files
+// app.get('/view/:id', (req, res) => {
+//     try {
+//         const uploadId = req.params.id;
+//         const uploadPath = path.join(uploadsDir, uploadId);
 
-        // Check if the upload directory exists
-        if (!fs.existsSync(uploadPath)) {
-            return res.status(404).json({ error: 'Upload not found' });
-        }
+//         // Check if the upload directory exists
+//         if (!fs.existsSync(uploadPath)) {
+//             return res.status(404).json({ error: 'Upload not found' });
+//         }
 
-        // Clean up the assets directory
-        fs.readdirSync(viewAssetsDir).forEach(file => {
-            fs.rmSync(path.join(viewAssetsDir, file), { recursive: true, force: true });
-        });
+//         // Clean up the assets directory
+//         fs.readdirSync(viewAssetsDir).forEach(file => {
+//             fs.rmSync(path.join(viewAssetsDir, file), { recursive: true, force: true });
+//         });
 
-        // Copy files from the upload directory to view/assets
-        fs.readdirSync(uploadPath).forEach(file => {
-            const sourcePath = path.join(uploadPath, file);
-            const destPath = path.join(viewAssetsDir, file);
-            fs.cpSync(sourcePath, destPath, { recursive: true });
-        });
+//         // Copy files from the upload directory to view/assets
+//         fs.readdirSync(uploadPath).forEach(file => {
+//             const sourcePath = path.join(uploadPath, file);
+//             const destPath = path.join(viewAssetsDir, file);
+//             fs.cpSync(sourcePath, destPath, { recursive: true });
+//         });
 
-        // Redirect to the view page
-        res.redirect(`https://mmi22-16.mmi-limoges.fr/view/${uploadId}`);
-    } catch (error) {
-        console.error('Error copying files:', error);
-        res.status(500).json({ error: 'Failed to copy files: ' + error.message });
-    }
-});
+//         // Redirect to the view page
+//         res.redirect(`https://mmi22-16.mmi-limoges.fr/view/${uploadId}`);
+//     } catch (error) {
+//         console.error('Error copying files:', error);
+//         res.status(500).json({ error: 'Failed to copy files: ' + error.message });
+//     }
+// });
 
 
 
