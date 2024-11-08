@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-
+import Refresh from "./Refresh";
 const ITEMS_PER_PAGE = 6;
 
 const truncateName = (name, maxLength = 20) => {
@@ -34,11 +34,15 @@ export default function ProjectList({ projects, refreshProjects }) {
             <span className="px-3 py-1 rounded-full bg-white/10 text-xs font-medium text-white/70">
               {filteredProjects.length} total
             </span>
+<<<<<<< Updated upstream
             {/* <button
               className="px-3 py-1 rounded-full bg-white/10 text-xs font-medium text-white hover:bg-white/20 transition duration-300"
             >
               Refresh
             </button> */}
+=======
+            {/* <Refresh /> */}
+>>>>>>> Stashed changes
           </div>
         </div>
         <div className="relative">

@@ -32,6 +32,13 @@ export default function App() {
     { id: "projects", label: "Projects" },
   ];
 
+  const handleTabChange = (tabId) => {
+    setActiveTab(tabId);
+    if (tabId === "projects") {
+      fetchProjects();
+    }
+  };
+
   return (
     <div className="min-h-screen relative overflow-hidden flex">
       {/* Background Image */}
@@ -68,10 +75,10 @@ export default function App() {
                 {tabs.map((tab) => (
                   <button
                     key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
+                    onClick={() => handleTabChange(tab.id)}
                     className={`relative px-6 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${activeTab === tab.id
-                        ? "text-white bg-white/10"
-                        : "text-white/60 hover:text-white/80"
+                      ? "text-white bg-white/10"
+                      : "text-white/60 hover:text-white/80"
                       }`}
                   >
                     {tab.label}
