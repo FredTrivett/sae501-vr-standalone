@@ -87,7 +87,7 @@ export default function ProjectList({ projects }) {
                 </div>
               </div>
               <a
-                href={`https://mmi22-16.mmi-limoges.fr/view/${project.id}`}
+                href={`https://mmi22-16.mmi-limoges.fr/view/${project}`}
                 className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 px-3 py-1.5 rounded-lg bg-white/10 text-white/90 hover:bg-white/30 text-xs font-medium flex items-center space-x-1"
               >
                 <span>View</span>

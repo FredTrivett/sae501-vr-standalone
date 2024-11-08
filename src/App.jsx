@@ -10,9 +10,7 @@ export default function App() {
 
   const fetchProjects = async () => {
     try {
-      const response = await fetch(
-        "http://mmi22-16.mmi-limoges.fr:3000/projects"
-      );
+      const response = await fetch("http://mmi22-16.mmi-limoges.fr/project");
       const data = await response.json();
       setProjects(data.uploads || []);
     } catch (error) {
