@@ -1,0 +1,47 @@
+server {
+    #listen 80;
+    #server_name i-demeerseman.mmi-limoges.fr www.i-demeerseman.mmi-limoges.fr;
+
+    listen 443 ssl;
+
+
+    ssl_certificate /etc/letsencrypt/live/mmi22-16.mmi-limoges.fr/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/mmi22-16.mmi-limoges.fr/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+    client_max_body_size 1000M;
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+        proxy_read_timeout 600;
+        proxy_connect_timeout 600;
+        proxy_send_timeout 600;
+        proxy_buffer_size 128k;
+        proxy_buffers 4 256k;
+        proxy_busy_buffers_size 256k;
+    }
+
+    location /view {
+        alias /var/www/html/view;
+        index index.html;
+    }
+
+    location /uploads {
+        proxy_pass http://localhost:3000/uploads;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+        try_files $uri $uri/ =404;
+    }
+
+    # For debugging
+    error_log /var/log/nginx/project_error.log debug;
+    access_log /var/log/nginx/project_access.log;
+}

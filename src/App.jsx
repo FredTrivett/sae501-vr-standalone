@@ -1,172 +1,116 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import Logo from "./components/Logo";
+import FileUploader from "./components/FileUploader";
+import ProjectList from "./components/ProjectList";
 
 export default function App() {
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [uploadStatus, setUploadStatus] = useState(null);
+  const [projects, setProjects] = useState([]);
+  const [activeTab, setActiveTab] = useState("upload");
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    setSelectedFile(file);
-    setUploadStatus(null); // Reset status when new file is selected
+  const fetchProjects = async () => {
+    try {
+      const response = await fetch("https://mmi22-16.mmi-limoges.fr/list");
+      const data = await response.json();
+      const formattedProjects = (data.uploads || []).map((id) => ({
+        id,
+        name: id,
+      }));
+      setProjects(formattedProjects);
+    } catch (error) {
+      console.error("Erreur lors de la récupération des projets:", error);
+      setProjects([]);
+    }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  useEffect(() => {
+    fetchProjects();
+  }, []);
 
-    const fileInput = document.getElementById("file-upload");
-    const file = fileInput.files[0];
+  const tabs = [
+    { id: "upload", label: "Upload" },
+    { id: "projects", label: "Projects" },
+  ];
 
-    if (!file) {
-      setUploadStatus({ success: false, message: "Please select a file" });
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      const response = await fetch("http://mmi22-16.mmi-limoges.fr:3000/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setUploadStatus({
-          success: true,
-          message: "Upload successful",
-          uploadId: data.uploadId,
-        });
-        // Reset file input and selected file after successful upload
-        setSelectedFile(null);
-        fileInput.value = "";
-      } else {
-        throw new Error(data.error || "Upload failed");
-      }
-    } catch (error) {
-      console.error("Upload error:", error);
-      setUploadStatus({
-        success: false,
-        message: `Upload failed: ${error.message}`,
-      });
+  const handleTabChange = (tabId) => {
+    setActiveTab(tabId);
+    if (tabId === "projects") {
+      fetchProjects();
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-      <div className="max-w-xl w-full">
-        <div className="bg-white rounded-lg shadow-lg p-6 space-y-6">
-          <div className="flex justify-center mb-2">
-            <img src="/DOWNTALE.svg" alt="DOWNTALE Logo" className="w-32" />
-          </div>
+    <div className="min-h-screen relative overflow-hidden flex">
+      {/* Background Image */}
+      <motion.img
+        src="./assets/background.jpg"
+        alt="background"
+        className="fixed inset-0 w-full h-full object-cover brightness-[0.7]"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6 }}
+        style={{ zIndex: -1 }}
+      />
 
-          <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-900">
-              Upload Your ZIP File
-            </h1>
-            <p className="mt-2 text-gray-600">
-              Please select a ZIP file to upload
-            </p>
-          </div>
+      {/* Logo */}
+      <motion.div
+        className="fixed top-8 left-8"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6 }}
+      >
+        <Logo />
+      </motion.div>
 
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            <div className="relative">
-              <input
-                type="file"
-                accept=".zip"
-                className="hidden"
-                id="file-upload"
-                onChange={handleFileChange}
-              />
-              <label
-                htmlFor="file-upload"
-                className="relative flex flex-col items-center justify-center w-full h-48 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors"
-              >
-                <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                  {selectedFile ? (
-                    <>
-                      <svg
-                        className="w-10 h-10 mb-3 text-green-500"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                      <p className="mb-2 text-sm text-gray-500">
-                        Selected file:{" "}
-                        <span className="font-semibold">
-                          {selectedFile.name}
-                        </span>
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        Click to change file
-                      </p>
-                    </>
-                  ) : (
-                    <>
-                      <svg
-                        className="w-10 h-10 mb-3 text-gray-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                        ></path>
-                      </svg>
-                      <p className="mb-2 text-sm text-gray-500">
-                        <span className="font-semibold">Click to upload</span>{" "}
-                        or drag and drop
-                      </p>
-                      <p className="text-xs text-gray-500">ZIP files only</p>
-                    </>
-                  )}
-                </div>
-              </label>
-            </div>
+      {/* Main Content Area */}
+      <div className="flex-grow"></div>
 
-            <button
-              type="submit"
-              className={`w-full py-2 px-4 font-semibold rounded-lg shadow-md transition-colors ${selectedFile
-                  ? "bg-blue-600 hover:bg-blue-700 text-white"
-                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                }`}
-              disabled={!selectedFile}
-            >
-              Upload File
-            </button>
-
-            {uploadStatus && (
-              <div className="space-y-2">
-                <div
-                  className={`text-center px-4 py-2 rounded-full text-sm font-medium ${uploadStatus.success
-                      ? "bg-green-100 text-green-800"
-                      : "bg-red-100 text-red-800"
-                    }`}
-                >
-                  {uploadStatus.message}
-                </div>
-                {uploadStatus.success && uploadStatus.uploadId && (
-                  <div className="text-center text-sm text-gray-600">
-                    Upload ID:{" "}
-                    <span className="font-mono">{uploadStatus.uploadId}</span>
-                  </div>
-                )}
+      {/* Right Panel */}
+      <div className="h-screen p-6 fixed right-0" style={{ width: "450px" }}>
+        <div className="h-full rounded-3xl bg-black/30 backdrop-blur-2xl border border-white/5 flex flex-col">
+          {/* Tab Navigation - Fixed at top */}
+          <div className="p-8 pb-0">
+            <div className="flex justify-center mb-8">
+              <div className="bg-black/20 backdrop-blur-2xl rounded-2xl p-1 flex space-x-1">
+                {tabs.map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => handleTabChange(tab.id)}
+                    className={`relative px-6 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${activeTab === tab.id
+                      ? "text-white bg-white/10"
+                      : "text-white/60 hover:text-white/80"
+                      }`}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
               </div>
-            )}
-          </form>
+            </div>
+          </div>
+
+          {/* Scrollable Content Area */}
+          <div className="flex-1 overflow-y-auto px-8 pb-8">
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={activeTab}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                {activeTab === "upload" ? (
+                  <FileUploader
+                    onUploadSuccess={() => {
+                      fetchProjects();
+                      setActiveTab("projects");
+                    }}
+                  />
+                ) : (
+                  <ProjectList projects={projects} />
+                )}
+              </motion.div>
+            </AnimatePresence>
+          </div>
         </div>
       </div>
     </div>
