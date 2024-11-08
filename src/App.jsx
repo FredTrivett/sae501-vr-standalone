@@ -10,11 +10,16 @@ export default function App() {
 
   const fetchProjects = async () => {
     try {
-      const response = await fetch("http://mmi22-16.mmi-limoges.fr/project");
+      const response = await fetch("https://mmi22-16.mmi-limoges.fr/list");
       const data = await response.json();
-      setProjects(data.uploads || []);
+      const formattedProjects = (data.uploads || []).map((id) => ({
+        id,
+        name: id,
+      }));
+      setProjects(formattedProjects);
     } catch (error) {
       console.error("Erreur lors de la récupération des projets:", error);
+      setProjects([]);
     }
   };
 

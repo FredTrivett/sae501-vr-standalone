@@ -7,8 +7,9 @@ export default function ProjectList({ projects }) {
   const [currentPage, setCurrentPage] = useState(1);
 
   const filteredProjects = useMemo(() => {
+    if (!Array.isArray(projects)) return [];
     return projects.filter((project) =>
-      project.name.toLowerCase().includes(searchQuery.toLowerCase())
+      (project?.name || "").toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [projects, searchQuery]);
 
@@ -83,11 +84,10 @@ export default function ProjectList({ projects }) {
                   <h3 className="text-white/90 font-medium text-sm truncate">
                     {project.name}
                   </h3>
-                  <p className="text-white/50 text-xs mt-1">{project.type}</p>
                 </div>
               </div>
               <a
-                href={`https://mmi22-16.mmi-limoges.fr/view/${project}`}
+                href={`https://mmi22-16.mmi-limoges.fr/view/${project.id}`}
                 className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 px-3 py-1.5 rounded-lg bg-white/10 text-white/90 hover:bg-white/30 text-xs font-medium flex items-center space-x-1"
               >
                 <span>View</span>

@@ -116,7 +116,7 @@ app.post('/uploads', upload.single('file'), (req, res) => {
 });
 
 // // Add an endpoint to list all uploads
-app.get('/projects', (req, res) => {
+app.get('/list', (req, res) => {
     try {
         const uploads = fs.readdirSync(uploadsDir);
         res.json({ uploads });
