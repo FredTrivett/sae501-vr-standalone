@@ -55,11 +55,11 @@ export default function App() {
         <Logo />
       </motion.div>
 
-      {/* Main Content Area (66%) */}
+      {/* Main Content Area */}
       <div className="flex-grow"></div>
 
-      {/* Right Panel (33%) */}
-      <div className="w-1/3 h-screen p-6 fixed right-0">
+      {/* Right Panel */}
+      <div className="h-screen p-6 fixed right-0" style={{ width: "450px" }}>
         <div className="h-full rounded-3xl bg-black/30 backdrop-blur-2xl border border-white/5 flex flex-col">
           {/* Tab Navigation - Fixed at top */}
           <div className="p-8 pb-0">

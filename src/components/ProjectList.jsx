@@ -2,6 +2,11 @@ import { useState, useMemo } from "react";
 
 const ITEMS_PER_PAGE = 6;
 
+const truncateName = (name, maxLength = 20) => {
+  if (name.length <= maxLength) return name;
+  return `${name.slice(0, maxLength)}...`;
+};
+
 export default function ProjectList({ projects }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -81,8 +86,11 @@ export default function ProjectList({ projects }) {
                   </svg>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-white/90 font-medium text-sm truncate">
-                    {project.name}
+                  <h3
+                    className="text-white/90 font-medium text-sm truncate"
+                    title={project.name}
+                  >
+                    {truncateName(project.name)}
                   </h3>
                 </div>
               </div>
