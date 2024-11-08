@@ -82,8 +82,8 @@ app.post('/uploads', upload.single('file'), (req, res) => {
         fs.mkdirSync(uploadPath, { recursive: true });
 
         // Créer le dossier assets à l'intérieur du projet
-        const assetsDir = path.join(uploadPath, 'assets');
-        fs.mkdirSync(assetsDir, { recursive: true });
+        // const assetsDir = path.join(uploadPath, 'assets');
+        // fs.mkdirSync(assetsDir, { recursive: true });
 
         const zipPath = path.join(uploadPath, 'upload.zip');
 
@@ -92,7 +92,7 @@ app.post('/uploads', upload.single('file'), (req, res) => {
 
         // Extraire le fichier ZIP dans le dossier assets
         const zip = new AdmZip(zipPath);
-        zip.extractAllTo(assetsDir, true); // Extraire dans le dossier assets
+        zip.extractAllTo(uploadPath, true); // Extraire dans le dossier assets
 
         // Supprimer le fichier ZIP original
         fs.unlinkSync(zipPath);
