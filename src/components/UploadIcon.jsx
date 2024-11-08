@@ -1,4 +1,16 @@
 export default function UploadIcon({ selected }) {
+  const truncateFileName = (name, maxLength = 30) => {
+    if (!name) return "";
+    if (name.length <= maxLength) return name;
+    const extension = name.split(".").pop();
+    const nameWithoutExt = name.slice(0, -(extension.length + 1));
+    const truncatedName = `${nameWithoutExt.slice(
+      0,
+      maxLength
+    )}...${extension}`;
+    return truncatedName;
+  };
+
   return (
     <div className="flex flex-col items-center justify-center pt-5 pb-6">
       {selected ? (
@@ -18,13 +30,17 @@ export default function UploadIcon({ selected }) {
               />
             </svg>
           </div>
-          <p className="mb-2 text-sm text-white/90">
-            Selected file:{" "}
-            <span className="font-medium text-white">{selected.name}</span>
-          </p>
-          <p className="text-xs text-white/50 hover:text-white/70 transition-colors">
-            Click to change file
-          </p>
+          <div className="text-center px-4">
+            <p className="mb-2 text-sm text-white/90">
+              Selected file:{" "}
+              <span className="font-medium text-white" title={selected.name}>
+                {truncateFileName(selected.name)}
+              </span>
+            </p>
+            <p className="text-xs text-white/50 hover:text-white/70 transition-colors">
+              Click to change file
+            </p>
+          </div>
         </>
       ) : (
         <>
@@ -43,11 +59,13 @@ export default function UploadIcon({ selected }) {
               />
             </svg>
           </div>
-          <p className="mb-2 text-sm text-white/90">
-            <span className="font-medium">Click to upload</span> or drag and
-            drop
-          </p>
-          <p className="text-xs text-white/50">ZIP files only</p>
+          <div className="text-center px-4">
+            <p className="mb-2 text-sm text-white/90">
+              <span className="font-medium">Click to upload</span> or drag and
+              drop
+            </p>
+            <p className="text-xs text-white/50">ZIP files only</p>
+          </div>
         </>
       )}
     </div>
